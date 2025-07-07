@@ -1,0 +1,136 @@
+.product-features {
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-foreground));
+}
+
+.product-features--full-width {
+  width: 100%;
+}
+
+.product-features__container {
+  margin: 0 auto;
+}
+
+.product-features__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+.product-features__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+  background-color: transparent;
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.product-features__item:hover {
+  transform: translateY(-2px);
+}
+
+.product-features__icon {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.product-features__icon svg {
+  color: rgb(var(--color-foreground));
+  opacity: 0.8;
+}
+
+.product-features__icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.product-features__content {
+  width: 100%;
+}
+
+.product-features__heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+  color: rgb(var(--color-foreground));
+}
+
+.product-features__text {
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.4;
+  color: rgba(var(--color-foreground), 0.75);
+}
+
+/* Mobile Optimierungen */
+@media screen and (max-width: 749px) {
+  .product-features__grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .product-features__item {
+    padding: 1rem;
+  }
+  
+  .product-features__heading {
+    font-size: 1rem;
+  }
+  
+  .product-features__text {
+    font-size: 0.85rem;
+  }
+}
+
+/* Tablet */
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .product-features__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop - 3 Spalten */
+@media screen and (min-width: 990px) {
+  .product-features__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Alternative: Horizontales Layout für viele Features */
+.product-features__grid--horizontal {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-features__grid--horizontal .product-features__item {
+  flex-direction: row;
+  text-align: left;
+  padding: 1rem;
+}
+
+.product-features__grid--horizontal .product-features__icon {
+  margin-bottom: 0;
+  margin-right: 1rem;
+  width: 48px;
+  height: 48px;
+}
+
+.product-features__grid--horizontal .product-features__heading {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.product-features__grid--horizontal .product-features__text {
+  font-size: 0.85rem;
+}

@@ -1,0 +1,617 @@
+{%- liquid
+  if section.settings.hide_variants and variant_images.size == product.media.size
+    assign single_media_visible = true
+  endif
+
+  if limit == 1
+    assign single_media_visible = true
+  endif
+
+  assign media_count = product.media.size
+  if section.settings.hide_variants and media_count > 1 and variant_images.size > 0
+    assign media_count = media_count | minus: variant_images.size | plus: 1
+  endif
+
+  if media_count == 1 or single_media_visible
+    assign single_media_visible_mobile = true
+  endif
+
+  if section.settings.media_size == 'large'
+    assign media_width = 0.65
+  elsif section.settings.media_size == 'medium'
+    assign media_width = 0.55
+  elsif section.settings.media_size == 'small'
+    assign media_width = 0.45
+  endif
+-%}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css">
+
+<div class="product-media-gallery" id="ProductMediaGallery-{{ section.id }}">
+  <div class="desktop-gallery medium-up-show">
+    <div class="desktop-gallery__container">
+      <div class="desktop-thumbnails">
+        <section class="splide desktop-thumbnails-slider" aria-label="Thumbnail Gallery" id="ThumbnailGallery-{{ section.id }}">
+          <div class="splide__track">
+            <ul class="splide__list">
+              {%- for media in product.media -%}
+                {%- unless section.settings.hide_variants and variant_images contains media.src -%}
+                  <li class="splide__slide thumbnail-slide">
+                    <button class="thumbnail-button" type="button" data-slide-index="{{ forloop.index0 }}">
+                      <img 
+                        src="{{ media.preview_image | img_url: width: 120 }}" 
+                        alt="{{ media.alt | escape }}"
+                        width="60" 
+                        height="60"
+                        loading="lazy">
+                    </button>
+                  </li>
+                {%- endunless -%}
+              {%- endfor -%}
+            </ul>
+          </div>
+        </section>
+      </div>
+
+      <div class="desktop-main-image">
+        <section class="splide main-image-slider" aria-label="Main Product Gallery" id="MainGallery-{{ section.id }}">
+          <div class="splide__track">
+            <ul class="splide__list">
+              {%- for media in product.media -%}
+                {%- unless section.settings.hide_variants and variant_images contains media.src -%}
+                  <li class="splide__slide main-slide">
+                    <div class="main-image-container">
+                      {% render 'product-thumbnail',
+                        media: media,
+                        media_count: media_count,
+                        position: forloop.index,
+                        desktop_layout: section.settings.gallery_layout,
+                        mobile_layout: section.settings.mobile_thumbnails,
+                        loop: section.settings.enable_video_looping,
+                        modal_id: section.id,
+                        xr_button: true,
+                        media_width: media_width,
+                        media_fit: section.settings.media_fit,
+                        constrain_to_viewport: section.settings.constrain_to_viewport,
+                        lazy_load: forloop.index > 1
+                      %}
+                    </div>
+                  </li>
+                {%- endunless -%}
+              {%- endfor -%}
+            </ul>
+          </div>
+        </section>
+         <div class="main-image-navigation">
+            <button class="main-nav-btn main-nav-prev" type="button" id="MainNavPrev-{{ section.id }}">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button class="main-nav-btn main-nav-next" type="button" id="MainNavNext-{{ section.id }}">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mobile-gallery small-hide">
+    <section class="splide mobile-main-slider" aria-label="Product Images" id="MobileGallery-{{ section.id }}">
+      <div class="splide__track">
+        <ul class="splide__list">
+          {%- for media in product.media -%}
+            {%- unless section.settings.hide_variants and variant_images contains media.src -%}
+              <li class="splide__slide mobile-slide">
+                <div class="mobile-image-container">
+                  {% render 'product-thumbnail',
+                    media: media,
+                    media_count: media_count,
+                    position: forloop.index,
+                    desktop_layout: section.settings.gallery_layout,
+                    mobile_layout: section.settings.mobile_thumbnails,
+                    loop: section.settings.enable_video_looping,
+                    modal_id: section.id,
+                    xr_button: true,
+                    media_width: media_width,
+                    media_fit: section.settings.media_fit,
+                    constrain_to_viewport: section.settings.constrain_to_viewport,
+                    lazy_load: forloop.index > 1
+                  %}
+                </div>
+              </li>
+            {%- endunless -%}
+          {%- endfor -%}
+        </ul>
+      </div>
+      <div class="splide__pagination mobile-dots"></div>
+    </section>
+  </div>
+</div>
+
+<style>
+.splide__track {
+  overflow: hidden;
+}
+
+.splide__slide {
+  opacity: 1 !important;
+}
+
+@media screen and (max-width: 749px) {
+  .desktop-gallery {
+    display: none !important;
+  }
+  
+  .mobile-gallery {
+    display: block !important;
+    width: 100%;
+    margin: 0 auto;
+  }
+  
+  .mobile-main-slider {
+    width: 100%;
+  }
+  
+  .mobile-slide {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center;
+  }
+  
+  .mobile-image-container {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .mobile-image-container .global-media-settings {
+    width: 350px !important;
+    height: 350px !important;
+    max-width: 350px !important;
+    min-height: 350px !important;
+    margin: 0 auto;
+  }
+  
+  .mobile-image-container img,
+  .mobile-image-container video {
+    width: 350px !important;
+    height: 350px !important;
+    object-fit: cover;
+    display: block;
+  }
+  
+  .mobile-main-slider .splide__pagination {
+    position: static !important;
+    bottom: auto !important;
+    left: auto !important;
+    right: auto !important;
+    transform: none !important;
+    padding: 0 !important;
+    margin: 1.5rem auto 0 auto !important;
+    background: none !important;
+  }
+  
+  .mobile-dots {
+    display: flex !important;
+    justify-content: center;
+    margin: 1.5rem auto 0 auto;
+    gap: 0.8rem;
+    padding: 1rem 0;
+  }
+  
+  .mobile-dots .splide__pagination__page {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #F8F8F8 0% 0% no-repeat padding-box;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: static !important;
+    opacity: 1;
+  }
+  
+  .mobile-dots .splide__pagination__page.is-active {
+    background: #E5E5E5 0% 0% no-repeat padding-box;
+    box-shadow: inset 0px 3px 6px #00000029;
+    opacity: 1;
+    transform: none;
+  }
+  
+  .main-image-navigation {
+    display: none;
+  }
+  
+  .mobile-main-slider .splide__arrows {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .mobile-gallery {
+    display: none !important;
+  }
+  
+  .desktop-gallery__container {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+  }
+  
+  .desktop-thumbnails {
+    width: 100px;
+    flex-shrink: 0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .desktop-thumbnails-slider {
+    max-height: 400px;
+  }
+  
+  .desktop-thumbnails-slider .splide__track {
+    overflow: hidden;
+  }
+  
+  .desktop-thumbnails-slider .splide__list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .thumbnail-slide {
+    width: 100px !important;
+    height: 100px !important;
+  }
+  
+  .thumbnail-button {
+    width: 100px !important;
+    height: 100px !important;
+    border: none;
+    border-radius: 12px;
+    background: none;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+    display: block;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .thumbnail-button:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+  
+  .thumbnail-button.is-active {
+    border: 3px solid #000000 !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  
+  .thumbnail-button img {
+    width: 100px !important;
+    height: 100px !important;
+    border-radius: 10px;
+    aspect-ratio: 1;
+    object-fit: cover;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .thumbnail-button:hover img {
+    transform: scale(1.02);
+  }
+  
+  .thumbnail-button.is-active img {
+    transform: scale(1.01);
+  }
+  
+  .desktop-main-image {
+    flex: 1;
+    max-width: calc(100% - 120px);
+  }
+  
+  .main-image-container {
+    width: 480px !important;
+    max-width: 480px !important;
+    min-width: 480px !important;
+    border-radius: 8px;
+    overflow: hidden;
+    position: static !important;
+  }
+  
+  .desktop-gallery .main-image-container .global-media-settings {
+    width: 480px !important;
+    height: 480px !important;
+    max-width: 480px !important;
+    max-height: 480px !important;
+    min-width: 480px !important;
+    min-height: 480px !important;
+    position: static !important;
+    overflow: hidden !important;
+    border: none !important;
+  }
+  
+  .desktop-gallery .main-image-container .global-media-settings:after {
+    display: none !important;
+  }
+  
+  .main-image-container img,
+  .main-image-container video {
+    width: 480px !important;
+    height: 480px !important;
+    max-width: 480px !important;
+    max-height: 480px !important;
+    min-width: 480px !important;
+    min-height: 480px !important;
+    object-fit: cover !important;
+    position: static !important;
+  }
+  
+  .main-image-slider .splide__track {
+    width: 480px !important;
+    max-width: 480px !important;
+  }
+  
+  .main-image-slider .splide__list {
+    width: 480px !important;
+    max-width: 480px !important;
+  }
+  
+  .main-image-slider .splide__slide {
+    width: 480px !important;
+    max-width: 480px !important;
+    min-width: 480px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .main-image-slider .splide__slide .main-image-container {
+    width: 480px !important;
+    max-width: 480px !important;
+    min-width: 480px !important;
+  }
+  
+  .main-image-slider .splide__slide .global-media-settings {
+    width: 480px !important;
+    height: 480px !important;
+    max-width: 480px !important;
+    max-height: 480px !important;
+    min-width: 480px !important;
+    min-height: 480px !important;
+  }
+  
+  .main-image-slider .splide__slide img,
+  .main-image-slider .splide__slide video {
+    width: 480px !important;
+    height: 480px !important;
+    max-width: 480px !important;
+    max-height: 480px !important;
+    min-width: 480px !important;
+    min-height: 480px !important;
+    object-fit: cover !important;
+  }
+  
+  .main-image-navigation {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.5rem;
+    width: 480px;
+    margin-left: 0;
+    margin-right: auto;
+  }
+  
+  .main-nav-btn {
+    width: 23px;
+    height: 23px;
+    font-weight: 600;
+    border: none !important;
+    outline: none !important;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease, opacity 0.3s ease;
+    color: #000;
+  }
+  
+  .main-nav-btn:hover {
+    color: #000;
+    opacity: 0.3;
+    transform: scale(1.1);
+  }
+  
+  .main-nav-btn:active {
+    transform: scale(1.05);
+  }
+  
+  .main-image-slider .splide__arrows {
+    display: none;
+  }
+  
+  .desktop-thumbnails-slider .splide__arrows {
+    display: none;
+  }
+  
+  .product-media-gallery .thumbnail,
+  .product-media-gallery .thumbnail[aria-current],
+  .product-media-gallery .thumbnail-list__item,
+  .product-media-gallery .thumbnail-list__item.is-active,
+  .product-media-gallery .thumbnail-list__item [aria-current],
+  .product-media-gallery .splide__slide.is-active,
+  .product-media-gallery .slider__slide.is-active {
+    box-shadow: none !important;
+    border: none !important;
+    border-color: transparent !important;
+    outline: none !important;
+  }
+  
+  .product__media-wrapper .thumbnail-list,
+  .product__media-wrapper .thumbnail-slider {
+    display: none !important;
+  }
+}
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const sectionId = '{{ section.id }}';
+  
+  // Mobile Gallery
+  const mobileGallery = document.getElementById(`MobileGallery-${sectionId}`);
+  if (mobileGallery && window.innerWidth <= 749) {
+    const mobileSplide = new Splide(`#MobileGallery-${sectionId}`, {
+      type: 'slide',
+      perPage: 1,
+      perMove: 1,
+      gap: 0,
+      arrows: false,
+      pagination: true,
+      drag: true,
+      snap: true,
+      keyboard: true,
+      wheel: false,
+      waitForTransition: false,
+      trimSpace: false,
+      focus: 'center',
+      autoWidth: false,
+      breakpoints: {
+        749: {
+          destroy: false,
+        }
+      }
+    });
+    
+    mobileSplide.mount();
+    console.log('Mobile Splide Gallery initialized');
+  }
+  
+  if (window.innerWidth > 749) {
+    const mainGallery = document.getElementById(`MainGallery-${sectionId}`);
+    const thumbnailGallery = document.getElementById(`ThumbnailGallery-${sectionId}`);
+    
+    if (mainGallery && thumbnailGallery) {
+      const mainSplide = new Splide(`#MainGallery-${sectionId}`, {
+        type: 'slide',
+        perPage: 1,
+        perMove: 1,
+        gap: 0,
+        arrows: false,
+        pagination: false,
+        drag: false,
+        keyboard: true,
+        wheel: false,
+      });
+      const thumbnailSplide = new Splide(`#ThumbnailGallery-${sectionId}`, {
+        direction: 'ttb',
+        height: '475px',
+        perPage: 4,
+        perMove: 1,
+        gap: '1rem',
+        arrows: false,
+        pagination: false,
+        isNavigation: true,
+        drag: true,
+        wheel: true,
+        breakpoints: {
+          990: {
+            perPage: 4,
+          }
+        }
+      });
+      
+      mainSplide.sync(thumbnailSplide);
+      
+      mainSplide.mount();
+      thumbnailSplide.mount();
+      
+      function updateNavigationButtons(currentIndex, lastIndex) {
+        const prevBtn = document.getElementById(`MainNavPrev-${sectionId}`);
+        const nextBtn = document.getElementById(`MainNavNext-${sectionId}`);
+        
+        if (prevBtn && nextBtn) {
+          if (currentIndex === 0) {
+            prevBtn.style.opacity = '0.3';
+            prevBtn.style.cursor = 'not-allowed';
+          } else {
+            prevBtn.style.opacity = '1';
+            prevBtn.style.cursor = 'pointer';
+          }
+          
+          if (currentIndex === lastIndex) {
+            nextBtn.style.opacity = '0.3';
+            nextBtn.style.cursor = 'not-allowed';
+          } else {
+            nextBtn.style.opacity = '1';
+            nextBtn.style.cursor = 'pointer';
+          }
+        }
+      }
+      
+      const thumbnailButtons = document.querySelectorAll(`#ThumbnailGallery-${sectionId} .thumbnail-button`);
+      thumbnailButtons.forEach((button, index) => {
+        button.addEventListener('click', () => {
+          mainSplide.go(index);
+          
+          thumbnailButtons.forEach(btn => btn.classList.remove('is-active'));
+          button.classList.add('is-active');
+        });
+      });
+      
+      if (thumbnailButtons[0]) {
+        thumbnailButtons[0].classList.add('is-active');
+      }
+      
+      mainSplide.on('moved', (newIndex) => {
+        thumbnailButtons.forEach(btn => btn.classList.remove('is-active'));
+        if (thumbnailButtons[newIndex]) {
+          thumbnailButtons[newIndex].classList.add('is-active');
+        }
+        
+        updateNavigationButtons(newIndex, mainSplide.length - 1);
+      });
+      
+      const prevBtn = document.getElementById(`MainNavPrev-${sectionId}`);
+      const nextBtn = document.getElementById(`MainNavNext-${sectionId}`);
+      
+      if (prevBtn && nextBtn) {
+        prevBtn.addEventListener('click', () => {
+          const currentIndex = mainSplide.index;
+          if (currentIndex > 0) {
+            mainSplide.go('<');
+          }
+        });
+        
+        nextBtn.addEventListener('click', () => {
+          const currentIndex = mainSplide.index;
+          const lastIndex = mainSplide.length - 1;
+          if (currentIndex < lastIndex) {
+            mainSplide.go('>');
+          }
+        });
+        
+        updateNavigationButtons(0, mainSplide.length - 1);
+      }
+    }
+  }
+  
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if ((window.innerWidth <= 749 && !mobileGallery) || 
+          (window.innerWidth > 749 && mobileGallery)) {
+        location.reload();
+      }
+    }, 250);
+  });
+});
+</script>
